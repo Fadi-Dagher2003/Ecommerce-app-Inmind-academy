@@ -1,0 +1,31 @@
+services:
+  db:
+    image: postgres
+    container_name: academy-db
+    restart: always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: example
+      POSTGRES_DB: academy
+    ports:
+      - "5432:5432"
+
+  academy-api:
+    image: aliyaakoubinmind/academy-api:latest
+    container_name: academy-api
+    restart: always
+    environment:
+      PORT: 4000
+      DATABASE_URL: "postgresql://root:example@db:5432/academy"
+      JWT_SECRET_KEY: "peyZGWpqq4+jo3R0QIwJkM33TgD25jGRAB3gSwQp0s5BTJUZHSWTmWtGDCU147vbM/GCKowcd9FUMtylpuZuaA=="
+    ports:
+      - "4000:4000"
+    depends_on:
+      - db
+
+  adminer:
+    image: adminer
+    container_name: academy-adminer
+    restart: always
+    ports:
+      - "8080:8080"

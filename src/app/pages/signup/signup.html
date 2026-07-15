@@ -1,0 +1,123 @@
+<div class="signup-page-container">
+  <div class="signup-card">
+
+    <div class="signup-header">
+      <h2>Create Account</h2>
+      <p>Join us and start your journey</p>
+    </div>
+
+    @if (errorMessage()) {
+      <div class="error-message show"><i class="fa-solid fa-circle-exclamation"></i> <span>{{ errorMessage() }}</span></div>
+    }
+
+    @if (successMessage()) {
+      <div class="success-message show"><i class="fa-solid fa-circle-check"></i> <span>{{ successMessage() }}</span></div>
+    }
+
+    <form [formGroup]="signupForm" (ngSubmit)="onSubmit()" class="signup-form">
+      
+      <!-- First Name -->
+      <div class="form-group">
+        <label for="firstName">First Name <span class="required">*</span></label>
+        <input type="text" id="firstName" formControlName="firstName" placeholder="Enter your first name" required autocomplete="given-name" [class.error]="f['firstName'].invalid && f['firstName'].touched" (input)="onInputChange()">
+        @if (f['firstName'].invalid && f['firstName'].touched) {
+          <div class="validation-error">@if (f['firstName'].errors?.['required']) {<small>First name is required</small>}</div>
+        }
+      </div>
+
+      <!-- Last Name -->
+      <div class="form-group">
+        <label for="lastName">Last Name <span class="required">*</span></label>
+        <input type="text" id="lastName" formControlName="lastName" placeholder="Enter your last name" required autocomplete="family-name" [class.error]="f['lastName'].invalid && f['lastName'].touched" (input)="onInputChange()">
+        @if (f['lastName'].invalid && f['lastName'].touched) {
+          <div class="validation-error">@if (f['lastName'].errors?.['required']) {<small>Last name is required</small>}</div>
+        }
+      </div>
+
+      <!-- Username -->
+      <div class="form-group">
+        <label for="username">Username <span class="required">*</span></label>
+        <input type="text" id="username" formControlName="username" placeholder="Choose a username" required autocomplete="username" [class.error]="f['username'].invalid && f['username'].touched" (input)="onInputChange()">
+        @if (f['username'].invalid && f['username'].touched) {
+          <div class="validation-error">
+            @if (f['username'].errors?.['required']) {<small>Username is required</small>}
+            @if (f['username'].errors?.['minlength']) {<small>Username must be at least 3 characters</small>}
+          </div>
+        }
+      </div>
+
+      <!-- Email -->
+      <div class="form-group">
+        <label for="email">Email Address <span class="required">*</span></label>
+        <input type="email" id="email" formControlName="email" placeholder="Enter your email" required autocomplete="email" [class.error]="f['email'].invalid && f['email'].touched" (input)="onInputChange()">
+        @if (f['email'].invalid && f['email'].touched) {
+          <div class="validation-error">
+            @if (f['email'].errors?.['required']) {<small>Email is required</small>}
+            @if (f['email'].errors?.['email']) {<small>Please enter a valid email address</small>}
+          </div>
+        }
+      </div>
+
+      <!-- Password -->
+      <div class="form-group">
+        <label for="password">Password <span class="required">*</span></label>
+        <div class="password-wrapper">
+          <input type="password" id="password" formControlName="password" placeholder="Enter your password" required autocomplete="new-password" minlength="8" [class.error]="f['password'].invalid && f['password'].touched" (input)="onInputChange()">
+          <button type="button" class="toggle-password" (click)="togglePassword()"><i class="fa-regular fa-eye" id="passwordIcon"></i></button>
+        </div>
+        
+        <!-- Password Strength -->
+        @if (f['password'].value?.length > 0) {
+          <div class="password-strength">
+            <div class="strength-bar" [class.active]="passwordStrength() >= 1" [class.weak]="passwordStrength() <= 1" [class.medium]="passwordStrength() === 2" [class.strong]="passwordStrength() >= 3"></div>
+            <div class="strength-bar" [class.active]="passwordStrength() >= 2" [class.medium]="passwordStrength() === 2" [class.strong]="passwordStrength() >= 3"></div>
+            <div class="strength-bar" [class.active]="passwordStrength() >= 3" [class.strong]="passwordStrength() >= 3"></div>
+            <span class="strength-text" [class.weak]="strengthClass() === 'weak'" [class.medium]="strengthClass() === 'medium'" [class.strong]="strengthClass() === 'strong'">{{ strengthText() }}</span>
+          </div>
+        }
+
+        <!-- Password Requirements -->
+        <div class="password-requirements">
+          <span class="req" [class.met]="f['password'].value?.length >= 8"><i class="fa-regular" [class.fa-circle]="f['password'].value?.length < 8" [class.fa-check-circle]="f['password'].value?.length >= 8"></i> 8+ characters</span>
+          <span class="req" [class.met]="/[A-Z]/.test(f['password'].value)"><i class="fa-regular" [class.fa-circle]="!/[A-Z]/.test(f['password'].value)" [class.fa-check-circle]="/[A-Z]/.test(f['password'].value)"></i> Uppercase</span>
+          <span class="req" [class.met]="/[a-z]/.test(f['password'].value)"><i class="fa-regular" [class.fa-circle]="!/[a-z]/.test(f['password'].value)" [class.fa-check-circle]="/[a-z]/.test(f['password'].value)"></i> Lowercase</span>
+          <span class="req" [class.met]="/[0-9]/.test(f['password'].value)"><i class="fa-regular" [class.fa-circle]="!/[0-9]/.test(f['password'].value)" [class.fa-check-circle]="/[0-9]/.test(f['password'].value)"></i> Number</span>
+        </div>
+        
+        @if (f['password'].invalid && f['password'].touched) {
+          <div class="validation-error">
+            @if (f['password'].errors?.['required']) {<small>Password is required</small>}
+            @if (f['password'].errors?.['minlength']) {<small>Password must be at least 8 characters</small>}
+          </div>
+        }
+      </div>
+
+      <!-- Date of Birth -->
+      <div class="form-group">
+        <label for="dateOfBirth">Date of Birth <span class="required">*</span></label>
+        <input type="date" id="dateOfBirth" formControlName="dateOfBirth" required [class.error]="f['dateOfBirth'].invalid && f['dateOfBirth'].touched" (input)="onInputChange()">
+        @if (f['dateOfBirth'].invalid && f['dateOfBirth'].touched) {
+          <div class="validation-error"><small>Date of birth is required</small></div>
+        }
+      </div>
+
+      <!-- Terms and Conditions -->
+      <div class="terms-group">
+        <input type="checkbox" id="terms" formControlName="terms">
+        <label for="terms">I agree to the <a href="javascript:void(0)">Terms of Service</a> and <a href="javascript:void(0)">Privacy Policy</a></label>
+      </div>
+      @if (f['terms'].invalid && f['terms'].touched) {
+        <div class="validation-error terms-error"><small>You must agree to the Terms of Service and Privacy Policy</small></div>
+      }
+
+      <!-- Submit Button -->
+      <button type="submit" class="signup-btn" [disabled]="isLoading() || signupForm.invalid">
+        <span class="btn-text">Create Account</span>
+        @if (isLoading()) {<span class="btn-loader"></span>}
+      </button>
+
+      <div class="login-link">Already have an account? <a routerLink="/login">Sign in</a></div>
+    </form>
+
+  </div>
+</div>
