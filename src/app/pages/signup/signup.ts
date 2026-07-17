@@ -139,6 +139,8 @@ export class SignupComponent implements OnInit, OnDestroy {
         this.authService.setToken(response.token);
         this.authService.setUser(response.user);
         
+        console.log('Registration successful:', response);
+        
         setTimeout(() => {
           this.router.navigate(['/login']);
         }, 2000);
@@ -146,6 +148,7 @@ export class SignupComponent implements OnInit, OnDestroy {
       error: (error) => {
         this.isLoading.set(false);
         this.errorMessage.set(error.message || 'Registration failed. Please try again.');
+        console.error('Registration error:', error);
       }
     });
   }

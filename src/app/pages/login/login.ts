@@ -17,7 +17,6 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   loginForm!: FormGroup;
 
-  // Simple signals
   isLoading = signal(false);
   errorMessage = signal('');
   successMessage = signal('');
@@ -72,25 +71,21 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.successMessage.set('Login successful! Redirecting...');
         
         this.authService.setToken(response.token);
-        console.log(response.token);
         this.authService.setUser(response.user);
-        console.log(response.user);
 
         setTimeout(() => {
-          // Check if user is admin
           const user = this.authService.getUser();
           if (user?.role === 'admin') {
             this.router.navigate(['/admin/dashboard']);
           } else {
-            // Regular users go to homepage
             this.router.navigate(['/']);
           }
         }, 5);
       },
-      
-      error: (error) => {
+      error: (error: Error) => {
         this.isLoading.set(false);
-        this.errorMessage.set(error.message || 'Invalid email or password. Please try again.');
+        this.errorMessage.set(error.message);
+        console.error('Login error:', error);
       }
     });
   }

@@ -1,0 +1,112 @@
+/* ================================================================
+   GLOBAL RESET & BASE STYLES
+   ================================================================ */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:host {
+  display: block;
+  font-family: 'Montserrat', sans-serif;
+  color: #111111;
+  background-color: #ffffff;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ================================================================
+   COMPONENT: ANNOUNCEMENT BAR
+   ================================================================ */
+.announcement-bar {
+  background-color: #000000;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  text-align: center;
+  padding: 12px 20px;
+}
+
+/* ================================================================
+   COMPONENT: MAIN HEADER / NAVIGATION
+   ================================================================ */
+.main-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 4%;
+  border-bottom: 1px solid #f0f0f0;
+  position: sticky;
+  top: 0;
+  background: #ffffff;
+  z-index: 100;
+}
+
+.logo {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: #111111;
+  font-weight: 700;
+  font-size: 14px;
+  text-transform: uppercase;
+  margin: 0 16px;
+  letter-spacing: 0.5px;
+  transition: color 0.2s ease;
+}
+
+.nav-links a:hover {
+  color: #767676;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.search-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-container input {
+  background-color: #f5f5f5;
+  border: none;
+  padding: 10px 15px 10px 40px;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 13px;
+  width: 200px;
+  transition: width 0.3s ease;
+}
+
+.search-container input:focus {
+  outline: 1px solid #111;
+  width: 230px;
+}
+
+.search-container i {
+  position: absolute;
+  left: 15px;
+  color: #767676;
+  font-size: 13px;
+}
+
+.header-actions a {
+  color: #111111;
+  font-size: 19px;
+  text-decoration: none;
+  transition: transform 0.2s;
+}
+
+.header-actions a:hover {
+  transform: scale(1.08);
+}

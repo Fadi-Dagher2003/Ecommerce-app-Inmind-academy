@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { catchError } from 'rxjs/operators';
 import { CookieService } from 'ngx-cookie-service';
 import { 
   IUser, 
@@ -16,7 +16,9 @@ import {
 })
 export class AuthService {
 
-  // Updated to local Docker backend
+  private http = inject(HttpClient);
+  private cookieService = inject(CookieService);
+
   private apiUrl = 'http://localhost:4000/api';
   private tokenKey = 'token';
   private userKey = 'user';
@@ -24,42 +26,54 @@ export class AuthService {
   private loginUrl = `${this.apiUrl}/auth/login`;
   private registerUrl = `${this.apiUrl}/auth/register`;
 
-  currentUser: IUser | undefined;
+  // Signals for reactive state
+  private tokenSignal = signal<string | null>(null);
+  private userSignal = signal<IUser | null>(null);
 
-  constructor(
-    private http: HttpClient,
-    private cookieService: CookieService
-  ) {
-    this.currentUser = this.getUserFromCookie();
+  // Computed signals
+  isLoggedIn = computed(() => !!this.tokenSignal());
+  currentUser = computed(() => this.userSignal());
+
+  constructor() {
+    this.loadFromCookies();
   }
 
-  getToken(): string {
-    return this.cookieService.get(this.tokenKey);
+  private loadFromCookies(): void {
+    const token = this.cookieService.get(this.tokenKey);
+    const userData = this.cookieService.get(this.userKey);
+    
+    if (token) {
+      this.tokenSignal.set(token);
+    }
+    if (userData) {
+      try {
+        this.userSignal.set(JSON.parse(userData));
+      } catch {
+        this.userSignal.set(null);
+      }
+    }
+  }
+
+  getToken(): string | null {
+    return this.tokenSignal();
   }
 
   setToken(token: string): void {
+    this.tokenSignal.set(token);
     this.cookieService.set(this.tokenKey, token, {
-      expires: 7, //days
+      expires: 7,
       path: '/',
       secure: false,
       sameSite: 'Lax'
     });
   }
 
-  hasToken(): boolean {
-    return this.cookieService.check(this.tokenKey);
-  }
-
-  removeToken(): void {
-    this.cookieService.delete(this.tokenKey, '/');
-  }
-
-  getUser(): IUser | undefined {
-    return this.currentUser;
+  getUser(): IUser | null {
+    return this.userSignal();
   }
 
   setUser(user: IUser): void {
-    this.currentUser = user;
+    this.userSignal.set(user);
     this.cookieService.set(this.userKey, JSON.stringify(user), {
       expires: 7,
       path: '/',
@@ -68,18 +82,14 @@ export class AuthService {
     });
   }
 
+  removeToken(): void {
+    this.tokenSignal.set(null);
+    this.cookieService.delete(this.tokenKey, '/');
+  }
+
   removeUser(): void {
-    this.currentUser = undefined;
+    this.userSignal.set(null);
     this.cookieService.delete(this.userKey, '/');
-  }
-
-  private getUserFromCookie(): IUser | undefined {
-    const userData = this.cookieService.get(this.userKey);
-    return userData ? JSON.parse(userData) : undefined;
-  }
-
-  isLoggedIn(): boolean {
-    return this.hasToken();
   }
 
   logout(): void {
@@ -87,18 +97,16 @@ export class AuthService {
     this.removeUser();
   }
 
+  // ✅ Login with error handling
   login(email: string, password: string): Observable<ILoginResponse> {
     const body: ILoginRequest = { email, password };
     return this.http.post<ILoginResponse>(this.loginUrl, body)
       .pipe(
-        tap((response) => {
-          this.setToken(response.token);
-          this.setUser(response.user);
-        }),
         catchError(this.handleError)
       );
   }
 
+  // ✅ Register with error handling
   register(
     email: string,
     firstName: string,
@@ -119,14 +127,11 @@ export class AuthService {
     };
     return this.http.post<IRegisterResponse>(this.registerUrl, body)
       .pipe(
-        tap((response) => {
-          this.setToken(response.token);
-          this.setUser(response.user);
-        }),
         catchError(this.handleError)
       );
   }
 
+  // ✅ Error handler that extracts the actual error message
   private handleError(error: HttpErrorResponse) {
     let errorMessage = 'An error occurred';
     
@@ -134,11 +139,13 @@ export class AuthService {
       // Client-side error
       errorMessage = error.error.message;
     } else {
-      // Server-side error
+      // Server-side error - try to extract the message from the response
       if (error.error?.message) {
         errorMessage = error.error.message;
       } else if (error.error?.error) {
         errorMessage = error.error.error;
+      } else if (typeof error.error === 'string') {
+        errorMessage = error.error;
       } else if (error.message) {
         errorMessage = error.message;
       }
