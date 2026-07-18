@@ -1,0 +1,53 @@
+.admin-container {
+      max-width: 1200px;
+      margin: 0px;
+      padding: 30px;
+      background: white;
+      border-radius: 0px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      font-family: 'Poppins', sans-serif;
+    }
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: #111;
+      font-family: 'Poppins', sans-serif;
+    }
+    .grid-wrapper {
+      margin: 20px 0;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .button-group {
+      margin-top: 20px;
+    }
+    button {
+      padding: 12px 24px;
+      background: #111;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-right: 10px;
+      font-family: 'Poppins', sans-serif;
+    }
+    .logout-btn {
+      background: #e74c3c;
+    }
+    .logout-btn:hover {
+      background: #c0392b;
+    }
+    ::ng-deep .grid-delete-btn {
+      padding: 4px 12px;
+      font-size: 12px;
+      background: #fff;
+      color: black;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    ::ng-deep .grid-delete-btn:hover {
+      background: #c0392b;
+      color: white;
+    }

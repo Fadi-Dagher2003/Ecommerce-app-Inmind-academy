@@ -1,97 +1,82 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/auth';
+import { AgGridAngular } from 'ag-grid-angular'; 
+import type { ColDef, ValueFormatterParams, GetRowIdParams } from 'ag-grid-community'; 
+
+import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
+ModuleRegistry.registerModules([AllCommunityModule]);
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule],
-  template: `
-    <div class="admin-container">
-      <h1>Admin Dashboard</h1>
-      <p>Welcome Admin!</p>
-      <div class="admin-stats">
-        <div class="stat-card">
-          <h3>Total Products</h3>
-          <p>156</p>
-        </div>
-        <div class="stat-card">
-          <h3>Total Orders</h3>
-          <p>89</p>
-        </div>
-        <div class="stat-card">
-          <h3>Total Users</h3>
-          <p>245</p>
-        </div>
-      </div>
-      <button (click)="goToHome()">Go to Homepage</button>
-      <button (click)="logout()" class="logout-btn">Logout</button>
-    </div>
-  `,
-  styles: [`
-    .admin-container {
-      max-width: 1200px;
-      margin: 40px auto;
-      padding: 30px;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    }
-    h1 {
-      font-size: 28px;
-      font-weight: 700;
-      color: #111;
-      font-family: 'Poppins', sans-serif;
-    }
-    .admin-stats {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 20px;
-      margin: 20px 0;
-    }
-    .stat-card {
-      padding: 20px;
-      background: #f8f9fa;
-      border-radius: 8px;
-      text-align: center;
-    }
-    .stat-card h3 {
-      font-size: 14px;
-      color: #666;
-      font-family: 'Poppins', sans-serif;
-    }
-    .stat-card p {
-      font-size: 32px;
-      font-weight: 700;
-      color: #111;
-      margin-top: 8px;
-      font-family: 'Poppins', sans-serif;
-    }
-    button {
-      padding: 12px 24px;
-      background: #111;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      margin-right: 10px;
-      font-family: 'Poppins', sans-serif;
-    }
-    .logout-btn {
-      background: #e74c3c;
-    }
-    .logout-btn:hover {
-      background: #c0392b;
-    }
-  `]
+  imports: [CommonModule, AgGridAngular],
+  templateUrl: './admin-dashboard.html',
+  styleUrls: ['./admin-dashboard.scss']
 })
 export class AdminDashboardComponent {
+  private authService = inject(AuthService);
+  private router = inject(Router);
 
-  constructor(
-    private authService: AuthService,
-    private router: Router
-  ) {}
+  rowData = [
+    { ID: 1, Name: "Shirt", Description: "Casual cotton shirt", Price: 25,Category: "men", Status: "In Stock" },
+    { ID: 2, Name: "Jeans", Description: "Slim fit denim", Price: 50,Category: "men", Status: "In Stock" },
+    { ID: 3, Name: "Jacket", Description: "Leather winter jacket", Price: 120,Category: "men", Status: "Out of Stock" },
+    { ID: 4, Name: "Socks", Description: "Pack of 3 ankle socks", Price: 8,Category: "men", Status: "In Stock" },
+    { ID: 5, Name: "Hat", Description: "Baseball cap", Price: 15,Category: "men",Status: "In Stock" },
+    { ID: 6, Name: "Sneakers", Description: "Running shoes", Price: 85,Category: "men", Status: "Low Stock" },
+    { ID: 7, Name: "Belt", Description: "Classic brown leather", Price: 20,Category: "men", Status: "In Stock" }
+  ];
+
+  colDefs: ColDef[] = [
+    { field: "ID", width: 100, flex: 0 },
+    { field: "Name" },
+    { field: "Description", editable: true, cellEditor: 'agTextCellEditor' },
+    { field: "Price", valueFormatter: this.priceFormatter },
+    { field: "Category" },
+    { field: "Status" },
+    {
+      headerName: "Actions",
+      cellStyle: { backgroundColor: '#ffffff'},
+      sortable: false,
+      filter: false,
+      flex: 0,
+      width: 120,
+      cellRenderer: (params: any) => {
+        const button = document.createElement('button');
+        button.className = 'grid-delete-btn';
+        button.innerText = 'Delete';
+        button.addEventListener('click', (e) => {
+          e.stopPropagation();
+          
+          
+          params.api.applyTransaction({ remove: [params.data] });
+          
+          // Keep your local reference array sync'd with the deletion event
+          this.syncLocalData(params.data);
+        });
+        return button;
+      }
+    }
+  ];
+
+  defaultColDef: ColDef = {
+    flex: 1,
+    filter: true,
+    floatingFilter: true
+  };
+
+  getRowId = (params: GetRowIdParams) => String(params.data.ID);
+
+  priceFormatter(params: ValueFormatterParams): string {
+    return params.value != null ? `$${Number(params.value).toFixed(2)}` : '';
+  }
+
+  // FIX 2: Moved sync array isolation out of the renderer loop to protect context execution
+  syncLocalData(rowToRemove: any): void {
+    this.rowData = this.rowData.filter(item => item.ID !== rowToRemove.ID);
+  }
 
   goToHome(): void {
     this.router.navigate(['/']);

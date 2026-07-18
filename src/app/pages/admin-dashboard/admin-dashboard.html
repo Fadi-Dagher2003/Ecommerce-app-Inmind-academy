@@ -1,1 +1,21 @@
-<p>admin-dashboard works!</p>
+<div class="admin-container">
+      <h1>Admin Dashboard</h1>
+      <p>Welcome Admin!</p>
+
+      <div class="grid-wrapper">
+        <ag-grid-angular
+          style="width: 100%; height: 400px;"
+          [rowData]="rowData"
+          [columnDefs]="colDefs"
+          [defaultColDef]="defaultColDef"
+          [pagination]="true"
+          [paginationPageSize]="5"
+          [paginationPageSizeSelector]="[5, 20, 50]"
+          [getRowId]="getRowId" />
+      </div>
+      
+      <div class="button-group">
+        <button (click)="goToHome()">Go to Homepage</button>
+        <button (click)="logout()" class="logout-btn">Logout</button>
+      </div>
+    </div>
