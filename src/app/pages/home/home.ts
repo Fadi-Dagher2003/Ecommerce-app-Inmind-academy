@@ -2,185 +2,102 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/auth';
+import { HeroComponent } from './components/hero/hero';
+import { CategoryPillarsComponent } from './components/category-pillars/category-pillars';
+import { ProductCardComponent } from '../../shared/components/product-card/product-card';
+
+export interface Product {
+  id: number;
+  title: string;
+  image: string;
+  description?: string;
+  price?: string;
+  rating?: number;
+  reviews?: number;
+  isBestseller?: boolean;
+}
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterLink],
-  template: `
-    <div class="home-container">
-      <!-- Header with Auth Buttons -->
-      <div class="header">
-        <h1>Welcome to Our Store</h1>
-        <div class="auth-buttons">
-          @if (!isLoggedIn()) {
-            <a routerLink="/login" class="login-btn">Login</a>
-            <a routerLink="/signup" class="signup-btn">Sign Up</a>
-          } @else {
-            <span class="welcome-text">Welcome, {{ getUserName() }}!</span>
-            <button (click)="logout()" class="logout-btn">Logout</button>
-          }
-        </div>
-      </div>
-      
-      <div class="products-grid">
-        <div class="product-card" *ngFor="let product of products">
-          <h3>{{ product.title }}</h3>
-          <p>{{ product.price }}</p>
-        </div>
-      </div>
-
-      @if (isAdmin()) {
-        <button (click)="goToAdmin()" class="admin-btn">Go to Admin Panel</button>
-      }
-    </div>
-  `,
-  styles: [`
-    .home-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 40px 20px;
-    }
-    
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 30px;
-      flex-wrap: wrap;
-      gap: 15px;
-    }
-    
-    h1 {
-      font-size: 32px;
-      font-weight: 700;
-      color: #111;
-      margin: 0;
-      font-family: 'Poppins', sans-serif;
-    }
-    
-    .auth-buttons {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-    
-    .login-btn {
-      padding: 10px 24px;
-      background: #111;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      text-decoration: none;
-      font-family: 'Poppins', sans-serif;
-      font-weight: 500;
-      transition: all 0.3s ease;
-    }
-    
-    .login-btn:hover {
-      background: #333;
-      transform: translateY(-2px);
-    }
-    
-    .signup-btn {
-      padding: 10px 24px;
-      background: transparent;
-      color: #111;
-      border: 2px solid #111;
-      border-radius: 6px;
-      cursor: pointer;
-      text-decoration: none;
-      font-family: 'Poppins', sans-serif;
-      font-weight: 500;
-      transition: all 0.3s ease;
-    }
-    
-    .signup-btn:hover {
-      background: #111;
-      color: white;
-      transform: translateY(-2px);
-    }
-    
-    .welcome-text {
-      font-family: 'Poppins', sans-serif;
-      font-weight: 500;
-      color: #111;
-    }
-    
-    .logout-btn {
-      padding: 8px 20px;
-      background: #e74c3c;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-family: 'Poppins', sans-serif;
-      font-weight: 500;
-      transition: all 0.3s ease;
-    }
-    
-    .logout-btn:hover {
-      background: #c0392b;
-      transform: translateY(-2px);
-    }
-    
-    .products-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 20px;
-    }
-    
-    .product-card {
-      padding: 20px;
-      border: 1px solid #eee;
-      border-radius: 8px;
-      background: white;
-      transition: all 0.3s ease;
-    }
-    
-    .product-card:hover {
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-      transform: translateY(-2px);
-    }
-    
-    .product-card h3 {
-      font-family: 'Poppins', sans-serif;
-      font-size: 16px;
-      margin: 0 0 8px 0;
-    }
-    
-    .product-card p {
-      font-family: 'Poppins', sans-serif;
-      font-weight: 600;
-      color: #111;
-      margin: 0;
-    }
-    
-    .admin-btn {
-      margin-top: 30px;
-      padding: 12px 24px;
-      background: #111;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-family: 'Poppins', sans-serif;
-      font-weight: 500;
-      transition: all 0.3s ease;
-    }
-    
-    .admin-btn:hover {
-      background: #333;
-      transform: translateY(-2px);
-    }
-  `]
+  imports: [
+    CommonModule, 
+    RouterLink, 
+    HeroComponent, 
+    CategoryPillarsComponent,
+    ProductCardComponent
+  ],
+  templateUrl: './home.html',
+  styleUrls: ['./home.scss']
 })
 export class HomeComponent {
-  products = [
-    { id: 1, title: 'Product 1', price: '$99.99' },
-    { id: 2, title: 'Product 2', price: '$149.99' },
-    { id: 3, title: 'Product 3', price: '$199.99' }
+  // ✅ Popular Products (Simple Card - no extra details)
+  popularProducts: Product[] = [
+    { 
+      id: 1, 
+      title: 'Ready for Lift(ing) Off', 
+      image: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=600' 
+    },
+    { 
+      id: 2, 
+      title: 'Everyday Seamless Restock', 
+      image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=600' 
+    },
+    { 
+      id: 3, 
+      title: 'Studio Audio Active ANC', 
+      image: 'https://images.unsplash.com/photo-1546435770-a3e426bf472b?q=80&w=600' 
+    },
+    { 
+      id: 4, 
+      title: 'For Every Daily Run', 
+      image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=600' 
+    }
+  ];
+
+  // ✅ Bestsellers (Full Card - with all details)
+  bestsellers: Product[] = [
+    {
+      id: 5,
+      title: 'Chrono Flex Sneaker',
+      image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=500',
+      description: 'Lightweight engineered mesh upper built for explosive high-intensity training intervals.',
+      price: 'US$85',
+      rating: 5,
+      reviews: 353,
+      isBestseller: true
+    },
+    {
+      id: 6,
+      title: 'Sleek Comfort Hoodie',
+      image: 'https://images.unsplash.com/photo-1525507119028-ed4c629a60a3?q=80&w=500',
+      description: 'Premium heavy-knit cotton blend featuring a structured drop-shoulder oversized profile.',
+      price: 'US$72',
+      rating: 4.5,
+      reviews: 353,
+      isBestseller: true
+    },
+    {
+      id: 7,
+      title: 'Studio Headset Max',
+      image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=500',
+      description: 'Advanced active noise cancellation pairing crystal clear audio with high-fidelity acoustics.',
+      price: 'US$145',
+      rating: 5,
+      reviews: 353,
+      isBestseller: true
+    },
+    {
+      id: 8,
+      title: 'Community Utility Tee',
+      image: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=80&w=500',
+      description: 'Ultra-breathable seamless technology designed to wick away heavy moisture comfortably.',
+      price: 'US$45',
+      rating: 4,
+      reviews: 353,
+      isBestseller: true
+    }
+    
   ];
 
   constructor(

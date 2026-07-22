@@ -1,0 +1,241 @@
+/* ================================================================
+   SECTION CONTAINER
+   ================================================================ */
+.section-container {
+  padding: 60px 4%;
+  position: relative;
+}
+
+.light-bg-tint {
+  background-color: #fafafa;
+  border-top: 1px solid #f0f0f0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.section-title-large {
+  font-size: 22px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* ================================================================
+   FILTER PILLS
+   ================================================================ */
+.filter-pills {
+  display: flex;
+  gap: 8px;
+  margin: 20px 0 25px 0;
+  flex-wrap: wrap;
+}
+
+.pill {
+  background-color: #ffffff;
+  color: #111111;
+  border: 1px solid #e5e5e5;
+  padding: 10px 22px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.pill:hover {
+  background-color: #f5f5f5;
+  border-color: #111111;
+}
+
+.pill.active {
+  background-color: #000000;
+  color: #ffffff;
+  border-color: #000000;
+}
+
+/* ================================================================
+   POPULAR PRODUCTS GRID
+   ================================================================ */
+.gymshark-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+/* ================================================================
+   BESTSELLERS CAROUSEL
+   ================================================================ */
+.slider-section {
+  padding-bottom: 40px;
+}
+
+.slider-header-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.carousel-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.arrow-btn {
+  background: transparent;
+  border: 1px solid #e5e5e5;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+  color: #cccccc;
+  transition: all 0.2s;
+}
+
+.arrow-btn.active-arrow {
+  color: #111111;
+  border-color: #111111;
+}
+
+.arrow-btn.active-arrow:hover {
+  background-color: #111111;
+  color: #ffffff;
+}
+
+.bestsellers-carousel-track {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-top: 10px;
+  padding-bottom: 25px;
+  scrollbar-width: none;
+}
+
+.bestsellers-carousel-track::-webkit-scrollbar {
+  display: none;
+}
+
+/* ================================================================
+   RESPONSIVE
+   ================================================================ */
+@media (max-width: 1024px) {
+  .gymshark-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 650px) {
+  .gymshark-grid {
+    grid-template-columns: 1fr;
+  }
+  .section-container {
+    padding: 40px 4%;
+  }
+  .carousel-controls {
+    display: none;
+  }
+}
+
+/* ================================================================
+   TESTING BUTTONS
+   ================================================================ */
+.testing-section {
+  background-color: #f8f9fa;
+  border-top: 2px solid #e0e0e0;
+  border-bottom: 2px solid #e0e0e0;
+  text-align: center;
+}
+
+.testing-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.welcome-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.test-btn {
+  padding: 12px 32px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  cursor: pointer;
+  text-decoration: none;
+  font-family: 'Montserrat', sans-serif;
+  transition: all 0.3s ease;
+}
+
+.test-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.test-btn-login {
+  background: #111;
+  color: #fff;
+}
+
+.test-btn-login:hover {
+  background: #333;
+}
+
+.test-btn-signup {
+  background: transparent;
+  color: #111;
+  border: 2px solid #111;
+}
+
+.test-btn-signup:hover {
+  background: #111;
+  color: #fff;
+}
+
+.test-btn-admin {
+  background: #2e7d32;
+  color: #fff;
+}
+
+.test-btn-admin:hover {
+  background: #1b5e20;
+}
+
+.test-btn-logout {
+  background: #e74c3c;
+  color: #fff;
+}
+
+.test-btn-logout:hover {
+  background: #c0392b;
+}
+
+/* ================================================================
+   RESPONSIVE
+   ================================================================ */
+@media (max-width: 650px) {
+  .testing-buttons {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .test-btn {
+    width: 100%;
+    text-align: center;
+  }
+}

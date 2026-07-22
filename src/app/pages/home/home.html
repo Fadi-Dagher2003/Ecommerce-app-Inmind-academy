@@ -1,1 +1,82 @@
+<div class="home-container">
+  <!-- Hero Component -->
+  <app-hero></app-hero>
+  
+  <!-- Category Pillars -->
+  <app-category-pillars></app-category-pillars>
 
+  <!-- ================================================================
+     POPULAR PRODUCTS
+     ================================================================ -->
+  <section class="section-container light-bg-tint">
+    <h2 class="section-title-large">Popular Right Now</h2>
+    
+    <!-- Filter Pills -->
+    <div class="filter-pills">
+      <button class="pill active">All</button>
+      <button class="pill">Women</button>
+      <button class="pill">Men</button>
+      <button class="pill">Accessories</button>
+      <button class="pill">Electronics</button>
+    </div>
+
+    <!-- Product Grid with Product Card Component -->
+    <div class="gymshark-grid">
+      <app-product-card 
+        *ngFor="let product of popularProducts" 
+        [product]="product">
+      </app-product-card>
+    </div>
+  </section>
+
+  <!-- ================================================================
+     BESTSELLERS CAROUSEL
+     ================================================================ -->
+  <section class="section-container slider-section">
+    <!-- Carousel Header -->
+    <div class="slider-header-flex">
+      <h2 class="section-title-large">Top 10 Bestsellers</h2>
+      <div class="carousel-controls">
+        <button class="arrow-btn" aria-label="Previous items">
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        <button class="arrow-btn active-arrow" aria-label="Next items">
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Carousel Track with Product Card Component -->
+    <div class="bestsellers-carousel-track">
+      <app-product-card 
+        *ngFor="let product of bestsellers" 
+        [product]="product"
+        [showDescription]="true"
+        [showPrice]="true"
+        [showRating]="true"
+        [showFavorite]="true">
+      </app-product-card>
+    </div>
+  </section>
+
+  <!-- ================================================================
+     TESTING BUTTONS
+     ================================================================ -->
+  <section class="section-container testing-section">
+    <h2 class="section-title-large">Testing Navigation</h2>
+    <div class="testing-buttons">
+      <!-- If not logged in -->
+      @if (!isLoggedIn()) {
+        <a routerLink="/login" class="test-btn test-btn-login">Login</a>
+        <a routerLink="/signup" class="test-btn test-btn-signup">Sign Up</a>
+      }
+      
+      <!-- If logged in -->
+      @if (isLoggedIn()) {
+        <span class="welcome-text">Welcome, {{ getUserName() }}!</span>
+        <button (click)="goToAdmin()" class="test-btn test-btn-admin">Go to Admin Dashboard</button>
+        <button (click)="logout()" class="test-btn test-btn-logout">Logout</button>
+      }
+    </div>
+  </section>
+</div>

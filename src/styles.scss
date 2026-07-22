@@ -1,4 +1,24 @@
-/* You can add global styles to this file, and also import other style files */
-body{
-    margin: 0;
-}
+ /* ================================================================
+           GLOBAL RESET & BASE STYLES
+           ================================================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            color: #111111;
+            background-color: #ffffff;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
