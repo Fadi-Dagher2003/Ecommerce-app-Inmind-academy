@@ -1,7 +1,7 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { Observable, throwError, of } from 'rxjs';
+import { catchError, tap, map } from 'rxjs/operators';
 import { CookieService } from 'ngx-cookie-service';
 import { 
   IUser, 
@@ -21,18 +21,19 @@ export class AuthService {
 
   private apiUrl = 'http://localhost:4000/api';
   private tokenKey = 'token';
-  private userKey = 'user';
   
   private loginUrl = `${this.apiUrl}/auth/login`;
   private registerUrl = `${this.apiUrl}/auth/register`;
+  private userProfileUrl = `${this.apiUrl}/user`; 
+  private checkTokenUrl = `${this.apiUrl}/auth/check`;
 
-  // Signals for reactive state
+  // Signals for reactive state (memory only)
   private tokenSignal = signal<string | null>(null);
   private userSignal = signal<IUser | null>(null);
 
-  // Computed signals
-  isLoggedIn = computed(() => !!this.tokenSignal());
-  currentUser = computed(() => this.userSignal());
+  // Computed signals real-only signals
+  isLoggedIn = computed(() => !!this.tokenSignal()); // !! returns boolean
+  currentUser = computed(() => this.userSignal()); // 
 
   constructor() {
     this.loadFromCookies();
@@ -40,17 +41,10 @@ export class AuthService {
 
   private loadFromCookies(): void {
     const token = this.cookieService.get(this.tokenKey);
-    const userData = this.cookieService.get(this.userKey);
     
     if (token) {
       this.tokenSignal.set(token);
-    }
-    if (userData) {
-      try {
-        this.userSignal.set(JSON.parse(userData));
-      } catch {
-        this.userSignal.set(null);
-      }
+      console.log('Token loaded from cookies');
     }
   }
 
@@ -72,14 +66,9 @@ export class AuthService {
     return this.userSignal();
   }
 
+  // Set user ONLY in memory (Signal), NOT in cookies
   setUser(user: IUser): void {
     this.userSignal.set(user);
-    this.cookieService.set(this.userKey, JSON.stringify(user), {
-      expires: 7,
-      path: '/',
-      secure: false,
-      sameSite: 'Lax'
-    });
   }
 
   removeToken(): void {
@@ -87,26 +76,40 @@ export class AuthService {
     this.cookieService.delete(this.tokenKey, '/');
   }
 
+  // Remove user ONLY from memory (Signal)
   removeUser(): void {
     this.userSignal.set(null);
-    this.cookieService.delete(this.userKey, '/');
   }
 
   logout(): void {
     this.removeToken();
     this.removeUser();
+    console.log('👋 Logged out');
   }
 
-  // ✅ Login with error handling
+  // Fetch current user from backend using the cookie then save him in memory(signal)
+  fetchCurrentUser(): Observable<IUser> {
+    return this.http.get<IUser>(this.userProfileUrl).pipe(
+      tap((user) => {
+        this.setUser(user);
+        console.log('User fetched and saved to memory:', user);
+      }),
+      catchError(this.handleError)
+    );
+  }
+
   login(email: string, password: string): Observable<ILoginResponse> {
     const body: ILoginRequest = { email, password };
-    return this.http.post<ILoginResponse>(this.loginUrl, body)
-      .pipe(
-        catchError(this.handleError)
-      );
+    return this.http.post<ILoginResponse>(this.loginUrl, body).pipe(
+      tap((response) => {
+        this.setToken(response.token);
+        this.setUser(response.user);
+        console.log('Login successful, user in memory:', response.user);
+      }),
+      catchError(this.handleError)
+    );
   }
 
-  // ✅ Register with error handling
   register(
     email: string,
     firstName: string,
@@ -125,21 +128,32 @@ export class AuthService {
       dateOfBirth, 
       role 
     };
-    return this.http.post<IRegisterResponse>(this.registerUrl, body)
-      .pipe(
-        catchError(this.handleError)
-      );
+    return this.http.post<IRegisterResponse>(this.registerUrl, body).pipe(
+      tap((response) => {
+        this.setToken(response.token);
+        this.setUser(response.user);
+        console.log('Registration successful, user in memory:', response.user);
+      }),
+      catchError(this.handleError)
+    );
   }
 
-  // ✅ Error handler that extracts the actual error message
+  checkTokenValidity(): Observable<boolean> {
+    return this.http.post<{ valid: boolean }>(this.checkTokenUrl, {}).pipe(
+      map(response => response.valid),
+      catchError(() => {
+        this.logout();
+        return of(false); 
+      })
+    );
+  }
+
   private handleError(error: HttpErrorResponse) {
     let errorMessage = 'An error occurred';
     
     if (error.error instanceof ErrorEvent) {
-      // Client-side error
       errorMessage = error.error.message;
     } else {
-      // Server-side error - try to extract the message from the response
       if (error.error?.message) {
         errorMessage = error.error.message;
       } else if (error.error?.error) {

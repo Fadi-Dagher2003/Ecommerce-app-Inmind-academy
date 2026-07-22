@@ -1,42 +1,41 @@
-import { Injectable } from '@angular/core';
-import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { HttpInterceptorFn } from '@angular/common/http';
+import { inject } from '@angular/core';
 import { AuthService } from './auth';
 import { Router } from '@angular/router';
+import { catchError, throwError } from 'rxjs';
 
-@Injectable()
-export class AuthInterceptor implements HttpInterceptor {
-
-  constructor(
-    private authService: AuthService,
-    private router: Router
-  ) {}
-
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    // Get token from auth service
-    const token = this.authService.getToken();
-
-    // Clone request and add Authorization header if token exists
-    let authReq = req;
-    if (token) {
-      authReq = req.clone({
-        setHeaders: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-    }
-
-    // Handle the request
-    return next.handle(authReq).pipe(
-      catchError((error: HttpErrorResponse) => {
-        // If 401 Unauthorized, logout and redirect
-        if (error.status === 401) {
-          this.authService.logout();
-          this.router.navigate(['/login']);
-        }
-        return throwError(() => error);
-      })
-    );
+export const authInterceptor: HttpInterceptorFn = (req, next) => {
+  const authService = inject(AuthService); //inject not to use a class constructor
+  const router = inject(Router);
+  
+  const token = authService.getToken();
+  
+  console.log('token: ', token);
+  
+  let authReq = req;
+  if (token) {
+    authReq = req.clone({
+      setHeaders: {
+        Authorization: `Bearer ${token}` // add token to http request
+      }
+    });
+    console.log('Token added to request');
   }
-}
+
+  return next(authReq).pipe( //send request
+    catchError((error) => {
+      console.error('Error:', error.status, error.url);
+      if (error.status === 401) {
+        console.log('401 Unauthorized');
+        authService.logout();
+        router.navigate(['/login']);
+      }
+      if (error.status === 404) {
+        console.log('404 Not Found - Redirecting to 404 page');
+        router.navigate(['/404']);
+      }
+      
+      return throwError(() => error);
+    })
+  );
+};
