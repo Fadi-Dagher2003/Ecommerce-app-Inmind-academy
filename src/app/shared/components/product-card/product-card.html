@@ -1,6 +1,6 @@
-<!-- Popular Products Card (Simple) -->
-@if (!product.isBestseller) {
-  <div class="gs-card">
+<!-- Simple Card (Popular Products) -->
+@if (!compact) {
+  <div class="gs-card" (click)="onCardClick()">
     <div class="gs-image-wrapper">
       <img [src]="product.image" [alt]="product.title">
     </div>
@@ -8,11 +8,11 @@
   </div>
 }
 
-<!-- Bestsellers Card (Full) -->
-@if (product.isBestseller) {
-  <a [routerLink]="['/product', product.id]" class="bs-bordered-card">
+<!-- Full Card (Bestsellers / Carousel) -->
+@if (compact) {
+  <div class="bs-bordered-card" (click)="onCardClick()">
     @if (showFavorite) {
-      <button class="favorite-icon-btn" (click)="$event.preventDefault();">
+      <button class="favorite-icon-btn" (click)="onFavoriteClick($event)">
         <i class="fa-regular fa-heart"></i>
       </button>
     }
@@ -21,9 +21,11 @@
     </div>
     <div class="bs-info-area">
       <h4 class="bs-product-name">{{ product.title }}</h4>
+      
       @if (showDescription && product.description) {
         <p class="bs-product-description">{{ product.description }}</p>
       }
+      
       @if (showRating && product.rating) {
         <div class="rating-stars">
           @for (star of fullStars; track $index) {
@@ -35,14 +37,15 @@
           @for (empty of emptyStars; track $index) {
             <i class="fa-regular fa-star"></i>
           }
-          @if (product.reviews) {
-            <span class="rating-count">({{ product.reviews }})</span>
+          @if (product.rating.count) {
+            <span class="rating-count">({{ product.rating.count }})</span>
           }
         </div>
       }
+      
       @if (showPrice && product.price) {
-        <div class="bs-price">{{ product.price }}</div>
+        <div class="bs-price">${{ product.price.toFixed(2) }}</div>
       }
     </div>
-  </a>
+  </div>
 }

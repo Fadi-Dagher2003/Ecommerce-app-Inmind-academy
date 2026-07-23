@@ -5,13 +5,12 @@
   <!-- Category Pillars -->
   <app-category-pillars></app-category-pillars>
 
-  <!-- ================================================================
-     POPULAR PRODUCTS
-     ================================================================ -->
+  
+
+<!-- Popular Products Grid -->
   <section class="section-container light-bg-tint">
     <h2 class="section-title-large">Popular Right Now</h2>
     
-    <!-- Filter Pills -->
     <div class="filter-pills">
       <button class="pill active">All</button>
       <button class="pill">Women</button>
@@ -20,44 +19,26 @@
       <button class="pill">Electronics</button>
     </div>
 
-    <!-- Product Grid with Product Card Component -->
     <div class="gymshark-grid">
-      <app-product-card 
-        *ngFor="let product of popularProducts" 
-        [product]="product">
-      </app-product-card>
+      @for (product of popularProducts(); track product.id) {
+        <app-product-card [product]="product"></app-product-card>
+      }
     </div>
   </section>
 
-  <!-- ================================================================
-     BESTSELLERS CAROUSEL
-     ================================================================ -->
-  <section class="section-container slider-section">
-    <!-- Carousel Header -->
-    <div class="slider-header-flex">
-      <h2 class="section-title-large">Top 10 Bestsellers</h2>
-      <div class="carousel-controls">
-        <button class="arrow-btn" aria-label="Previous items">
-          <i class="fa-solid fa-chevron-left"></i>
-        </button>
-        <button class="arrow-btn active-arrow" aria-label="Next items">
-          <i class="fa-solid fa-chevron-right"></i>
-        </button>
-      </div>
-    </div>
+  <!-- Bestsellers Carousel -->
+  <app-product-carousel 
+    [nbrBestsellerProducts]="4"
+    [itemsPerPage]="4">
+  </app-product-carousel>
 
-    <!-- Carousel Track with Product Card Component -->
-    <div class="bestsellers-carousel-track">
-      <app-product-card 
-        *ngFor="let product of bestsellers" 
-        [product]="product"
-        [showDescription]="true"
-        [showPrice]="true"
-        [showRating]="true"
-        [showFavorite]="true">
-      </app-product-card>
-    </div>
-  </section>
+  <!-- Product detail page --can replace with data -->
+<app-product-carousel 
+  category="men's clothing"
+  [excludeProductId]="10"
+  [itemsPerPage]="4"
+  customTitle="You May Also Like">
+</app-product-carousel>
 
   <!-- ================================================================
      TESTING BUTTONS

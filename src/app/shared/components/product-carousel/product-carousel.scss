@@ -1,0 +1,172 @@
+/* ================================================================
+   COMPONENT: BESTSELLERS CAROUSEL
+   ================================================================ */
+.carousel-container {
+  padding: 40px 4%;  /* ✅ Added top padding */
+  margin: 0 auto;
+  max-width: 1440px;
+}
+
+.slider-header-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.carousel-title {
+  font-size: 22px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-family: 'Montserrat', sans-serif;
+  margin: 0;
+}
+
+.carousel-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.arrow-btn {
+  background: transparent;
+  border: 1px solid #e5e5e5;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+  color: #cccccc;
+  transition: all 0.2s;
+}
+
+.arrow-btn.active-arrow {
+  color: #111111;
+  border-color: #111111;
+}
+
+.arrow-btn.active-arrow:hover {
+  background-color: #111111;
+  color: #ffffff;
+}
+
+.arrow-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.bestsellers-carousel-track {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  padding-top: 10px;
+  padding-bottom: 25px;
+}
+
+.bestsellers-carousel-track app-product-card {
+  width: 100%;
+}
+
+/* Loading State */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 0;
+  gap: 16px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #e0e0e0;
+  border-top: 3px solid #111111;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-state {
+  text-align: center;
+  padding: 60px 0;
+}
+
+.error-state p {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 16px;
+  color: #666;
+}
+
+.error-state button {
+  margin-top: 12px;
+  padding: 10px 24px;
+  background: #111;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.error-state button:hover {
+  background: #333;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .bestsellers-carousel-track {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .bestsellers-carousel-track {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 650px) {
+  .carousel-container {
+    padding: 30px 20px;  /* ✅ Adjusted top padding for mobile */
+  }
+  .slider-header-flex {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .carousel-title {
+    font-size: 18px;
+  }
+  .bestsellers-carousel-track {
+    grid-template-columns: 1fr;
+  }
+  .carousel-controls {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .carousel-container {
+    padding: 20px 12px;  /* ✅ Adjusted top padding for small mobile */
+  }
+  .carousel-title {
+    font-size: 16px;
+  }
+  .page-info {
+    font-size: 12px;
+  }
+  .arrow-btn {
+    width: 34px;
+    height: 34px;
+    font-size: 12px;
+  }
+}

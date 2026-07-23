@@ -1,0 +1,59 @@
+<div class="carousel-container">
+  <!-- Loading -->
+  @if (isLoading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading products...</p>
+    </div>
+  }
+
+  <!-- Error -->
+  @else if (error()) {
+    <div class="error-state">
+      <p>{{ error() }}</p>
+      <button (click)="refresh()">Try Again</button>
+    </div>
+  }
+
+  <!-- Products -->
+  @else {
+    <!-- Carousel Header -->
+    <div class="slider-header-flex">
+      <h2 class="carousel-title">{{ title() }}</h2>
+      <div class="carousel-controls">
+        <!-- back arrow -->
+        @if (hasPrev()){
+        <button 
+          class="arrow-btn" 
+          (click)="previousPage()" 
+          [disabled]="!hasPrev()">
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+      }
+        <!-- next arrow -->
+        @if (hasNext()) {
+        <button 
+          class="arrow-btn active-arrow" 
+          (click)="nextPage()" 
+          [disabled]="!hasNext()">
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      }
+      </div>
+    </div>
+
+    <!-- COMPONENT: CAROUSEL TRACK -->
+    <div class="bestsellers-carousel-track">
+      @for (product of currentItems(); track product.id) {
+        <app-product-card 
+          [product]="product"
+          [compact]="true"
+          [showDescription]="true"
+          [showPrice]="true"
+          [showRating]="true"
+          [showFavorite]="true">
+        </app-product-card>
+      }
+    </div>
+  }
+</div>

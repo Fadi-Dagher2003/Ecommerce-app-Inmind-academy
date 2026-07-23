@@ -1,17 +1,7 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-
-export interface Product {
-  id: number;
-  title: string;
-  image: string;
-  description?: string;
-  price?: string;
-  rating?: number;
-  reviews?: number;
-  isBestseller?: boolean; // Controls which card style to use
-}
+import { IProduct } from '../../interfaces/product';
 
 @Component({
   selector: 'app-product-card',
@@ -21,24 +11,37 @@ export interface Product {
   styleUrls: ['./product-card.scss']
 })
 export class ProductCardComponent {
-  @Input() product!: Product;
+  @Input() product!: IProduct;
   @Input() showDescription: boolean = false;
   @Input() showPrice: boolean = false;
   @Input() showRating: boolean = false;
   @Input() showFavorite: boolean = false;
+  @Input() compact: boolean = false;
+
+  @Output() productClick = new EventEmitter<IProduct>();
+  @Output() favoriteClick = new EventEmitter<IProduct>();
 
   get fullStars(): number[] {
-    if (!this.product.rating) return [];
-    return Array(Math.floor(this.product.rating)).fill(0);
+    if (!this.product?.rating?.rate) return [];
+    return Array(Math.floor(this.product.rating.rate)).fill(0);
   }
 
   get hasHalfStar(): boolean {
-    if (!this.product.rating) return false;
-    return this.product.rating % 1 >= 0.5;
+    if (!this.product?.rating?.rate) return false;
+    return this.product.rating.rate % 1 >= 0.5;
   }
 
   get emptyStars(): number[] {
-    if (!this.product.rating) return [];
-    return Array(5 - Math.ceil(this.product.rating)).fill(0);
+    if (!this.product?.rating?.rate) return [];
+    return Array(5 - Math.ceil(this.product.rating.rate)).fill(0);
+  }
+
+  onCardClick(): void {
+    this.productClick.emit(this.product);
+  }
+
+  onFavoriteClick(event: Event): void {
+    event.stopPropagation();
+    this.favoriteClick.emit(this.product);
   }
 }
